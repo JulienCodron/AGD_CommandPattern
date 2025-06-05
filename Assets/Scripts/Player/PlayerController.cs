@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Command.Commands;
 using UnityEngine;
 
 namespace Command.Player
@@ -88,6 +89,34 @@ namespace Command.Player
             units[activeUnitIndex].ResetUnitIndicator();
             activeUnitIndex--;
             units[activeUnitIndex].StartUnitTurn();
+        }
+        
+        public void ProcessUnitCommand(UnitCommand commandToProcess) { GetUnitByID(commandToProcess.commandData.ActorUnitID).ProcessUnitCommand(commandToProcess); }
+        
+        public void ResetCurrentActiveUnit()
+        {
+            // Reset the unit indicator (Arrow) for the currently active unit.
+            units[activeUnitIndex].ResetUnitIndicator();
+    
+            // Move to the previous unit in the list.
+            activeUnitIndex--;
+    
+            // Continue searching for a valid, living unit to make active.
+            while (activeUnitIndex >= 0)
+            {
+                // Check if the unit at the current index is not alive (i.e., it's defeated).
+                if (!units[activeUnitIndex].IsAlive())
+                {
+                    // Move to the previous unit in the list.
+                    activeUnitIndex--;
+                }
+                else
+                {
+                    // Activate the next living unit in the list and start its turn.
+                    units[activeUnitIndex].StartUnitTurn();
+                    break; // Exit the loop once an active unit is found.
+                }
+            }
         }
     }
 }
